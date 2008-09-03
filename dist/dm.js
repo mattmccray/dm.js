@@ -59,7 +59,7 @@ DM.ConnectionFactory = {
     
     // Detect DB type...
     if(typeof openDatabase != 'undefined') {
-      conn = new DM.WhatHgConnection(connInfo);
+      conn = new DM.Html5Connection(connInfo);
       
     } else if(typeof GearsFactory != 'undefined') {
       conn = new DM.GearsConnection(connInfo);
@@ -165,7 +165,7 @@ DM.AirConnection = new Class({
         count = 0;
     statement.sqlConnection = this.connection;
     
-    // Air uses named params... WhatHg doesn't. We're conforming more to the HTML5 psuedo-spec, 
+    // Air uses named params... WhatWG/HTML5 doesn't. We're conforming more to the HTML5 psuedo-spec, 
     // so we don't support named params either.
     statement.text = sql.replace(/(\?)/g, function(riddler){
       // TODO: Do I need to add 65 and use String.fromCharCode to use alphas instead of numerics?
@@ -202,9 +202,9 @@ DM.AirConnection = new Class({
 
 
 // ===========================
-// = WhatHg/HTML5 Connection =
+// = WhatWG/HTML5 Connection =
 // ===========================
-DM.WhatHgConnection = new Class({
+DM.Html5Connection = new Class({
   
   initialize: function(connInfo) {
 //    console.log('Creating WhatHg/HTML5 database connection...');
