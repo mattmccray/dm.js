@@ -1,4 +1,6 @@
-/* Copyright (c) 2008 M@ McCray,
+/* Copyright (c) 2008 M@ McCray.
+
+  REQUIRES MOOTOOLS 1.2
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the

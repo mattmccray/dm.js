@@ -1,5 +1,7 @@
 # DM.js
 
+Requires Mootools 1.2!
+
 This project is still in the early phases.
 
 ## What Works
@@ -25,9 +27,8 @@ In your application's initialization, you'll need to create the database object:
       displayName: 'Graphic Novelist',
       description: 'Graphic Novelist database... What?'
     });
-  
-Now you can define your models:
 
+Now you can define your models:
 
     var Script = new DM.Model('scripts', {
       
@@ -52,6 +53,10 @@ Now you can define your models:
     
       // Any model instance methods you'd like here...
     });
+
+After you've defined/included all of your models:
+
+    DM.Model.createModels(); // Executes CREATE TABLE IF EXISTS for each model's schema...
 
 Creating a model instance:
 
