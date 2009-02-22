@@ -34,12 +34,11 @@ var Options = {
   
   setOptions: function(opts) {
     var defaultOpts = $H(this.options || {}),
-        overrideOpts = $(opts || {});
+        overrideOpts = $H(opts || {});
     this.options = defaultOpts.merge(overrideOpts).toObject();
   }
   
 }
-
 
 //= require "connection"
 //= require "database"
