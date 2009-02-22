@@ -1,8 +1,9 @@
 # DM.js
 
-Requires Mootools 1.2!
+Requires Prototype 1.6+!
 
 This project is still in the early phases.
+
 
 ## What Works
 
@@ -10,12 +11,15 @@ This project is still in the early phases.
 * Simple models and schema generator
 * Base CRUD on models
 * Event callbacks for beforeCreate, afterCreate, beforeSave, and afterSave
+* Rudamentary Dataset class good for filtered reading of tables...
+
 
 ## What Doesn't Work (Yet)
 
 * Adobe AIR back-end
 * Relationships (planned: hasMany, hasAndBelongsToMany, hasOne, belongsTo)
 * Finder WHERE clauses
+
 
 # Example Usage
 
@@ -81,7 +85,8 @@ Typical model kinds of things to do:
     Script.find(1, function(script){
       // Script 1 stuff here...
     });
-    
+
+
 # Todo
 
 * Need WHERE builder so finders can actually be useful

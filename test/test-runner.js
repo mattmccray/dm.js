@@ -66,18 +66,19 @@
     delete Tests['auto_test'];
 
     for(func in Tests) {
-      if (/^note/.test(func)) {
-        list_html += li ({'class':'note'},
-          div (Tests[func])
-        )
-      } else { //   if(/^test/.test(func)) {
-        methodList.push(func);
-        list_html += li ({id:func, 'class':'untested'},
-          span (func.toString()),
-          div (' ', {id: (func +'-error')})
-        )
+      if(Tests.hasOwnProperty(func)) { 
+        if (/^note/.test(func)) {
+          list_html += li ({'class':'note'},
+            div (Tests[func])
+          )
+        } else { //   if(/^test/.test(func)) {
+          methodList.push(func);
+          list_html += li ({id:func, 'class':'untested'},
+            span (func.toString()),
+            div (' ', {id: (func +'-error')})
+          )
+        }
       }
-      
     }
   } else {
     list_html = li('No tests defined!', {'class':'fail'})
@@ -210,7 +211,10 @@
     window.assertionCount++;
     if(!condition) {
       ex = 'true was expected, but value was '+ condition;
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assert', ex);
+    } else {
+      console.log("PASS: "+ msg);
     }
   }
 
@@ -218,23 +222,32 @@
     window.assertionCount++;
     if(condition) {
       ex = 'false was expected, but value was '+ condition;
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assertFalse', ex);
-    }
+    }   else {
+        console.log("PASS: "+ msg);
+      }
   }
 
   window.assertNull = function(condition, msg) {
     window.assertionCount++;
     if(null != condition) {
       ex = 'null was expected, but value was '+ condition;
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assertNull', ex);
-    }
+    }   else {
+        console.log("PASS: "+ msg);
+      }
   }
 
   window.assertNotNull = function(condition, msg) {
     window.assertionCount++;
     if(null == condition) {
       ex = 'null was not expected, but value was '+ condition;
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assertNotNull', ex);
+    } else {
+        console.log("PASS: "+ msg);
     }    
   }
 
@@ -242,32 +255,44 @@
     window.assertionCount++;
     ex = condition1 +' was expected, but value was '+ condition2;
     if(condition1 != condition2) {
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assertEqual', ex);
-    }
+    }   else {
+        console.log("PASS: "+ msg);
+      }
   }
   
   window.assertNotEqual = function(condition1, condition2, msg) {
     window.assertionCount++;
     if(condition1 == condition2) {
       ex = condition1 +' was not expected, but value was '+ condition2;
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assertNotEqual', ex);
-    }
+    }   else {
+        console.log("PASS: "+ msg);
+      }
   }
   
   window.assertUndefined = function(object, msg) {
     window.assertionCount++;
     if(object != 'undefined' ) {
       ex = object +' was defined';
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assertUndefined', ex);
-    }
+    }   else {
+        console.log("PASS: "+ msg);
+      }
   }
 
   window.assertDefined = function(object, msg) {
     window.assertionCount++;
     if(object == 'undefined' ) {
       ex = object +' was undefined';
+      console.log("FAIL: "+ ex +"   "+ msg);
       assertError(msg, 'assertDefined', ex);
-    }
+    }   else {
+        console.log("PASS: "+ msg);
+      }
   }
   
 // Private functions

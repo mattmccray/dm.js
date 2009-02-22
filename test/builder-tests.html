@@ -1,0 +1,92 @@
+<html>
+  <script src="../etc/prototype.js"></script>
+  <script src="../dist/dm.js"></script>
+  <script>
+  
+  
+  var Tests = {
+
+    title:        "DM SqlBuilder Tests",
+  //  description:  "This is mainly just a place holder. We need to create a bunch of tests!",
+    auto_test:    true,
+
+    note1: "Verify classes exist..",
+
+    "API": function() {
+      assertDefined( typeof DM,           "DM is missing" );
+      assertDefined( typeof DM.Database,  "DM.Database is missing" );
+      assertDefined( typeof DM.Schema,    "DM.Schema is missing" );
+      assertDefined( typeof DM.Model,     "DM.Model is missing" );
+    },
+
+    note2: "Connection...",
+
+    "Create db connection...": function() {
+      var db = new DM.Database({
+        name:        'GraphicNovelistTest.db',
+        displayName: 'Graphic Novelist',
+        description: 'Graphic Novelist database... What?'
+      });
+      assertNotNull(db);
+    },
+    
+    "'user_id'.eq(10)": function() {
+      res = 'user_id'.eq(10);
+      assertEqual('user_id', res[0]);
+      assertEqual('=', res[1]);
+      assertEqual(10, res[2]);
+    },
+    
+    "'fname'.like('bob')": function() {
+      res = 'fname'.like('bob');
+      assertEqual('fname', res[0]);
+      assertEqual('like', res[1]);
+      assertEqual('bob', res[2]);
+
+      
+      assertEqual("['user_id', '!=', 10]", Object.inspect( 'user_id'.neq(10) ))
+      assertEqual("['user_id', '<', 10]", Object.inspect( 'user_id'.lt(10)))
+      assertEqual("['user_id', '>', 10]", Object.inspect( 'user_id'.gt(10)))
+      assertEqual("['user_id', '<=', 10]", Object.inspect( 'user_id'.lteq(10)))
+      assertEqual("['user_id', '>=', 10]", Object.inspect( 'user_id'.gteq(10)))
+      
+    },
+    
+    "Test Dataset": function() {
+      var ds = new DM.Dataset('items'),
+          ds1 = ds.clone(),
+          ds2;
+      assertNotNull(ds);
+      ds.filter('user_id', '=', 10);
+      assertEqual("SELECT * FROM items WHERE (user_id = ?) ;", ds.toSql() );
+      ds2 = ds.clone();
+      
+      ds.all().filter('user_id =', 10);
+      assertEqual("SELECT * FROM items WHERE (user_id = ?) ;", ds.toSql() );
+
+      ds.all().filter( 'user_id'.eq(10) );
+      assertEqual("SELECT * FROM items WHERE (user_id = ?) ;", ds.toSql() );
+      
+      ds.filter( 'login'.eq('myname') ).filter( 'fname'.like('matt') );
+      assertEqual("SELECT * FROM items WHERE (user_id = ?) AND (login = ?) AND (fname like ?) ;", ds.toSql() );
+
+      // Make sure the clone worked
+      assertEqual("SELECT * FROM items WHERE (user_id = ?) ;", ds2.toSql() );
+      
+      assertEqual(
+        "SELECT * FROM items WHERE (user_id = ?) AND (login = ?) ;", 
+        ds1.where('user_id', '=', 10).and('login', '=', 'myname').toSql() 
+      );
+
+      ds2.order('age');
+      assertEqual("SELECT * FROM items WHERE (user_id = ?)  ORDER BY age ASC;", ds2.toSql() );
+      
+      var scripts = new DM.Dataset('scripts');
+      scripts.each(function(row){
+//        console.log(row.title)
+      })
+    }
+  };
+  </script>
+  <script src="test-runner.js"></script>
+</html>

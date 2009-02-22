@@ -3,33 +3,21 @@ task :test do
   puts `adl test-app.xml`
 end
 
-
 desc "Compiles from source scripts into dist/dm.js"
 task :build do
-  source = {}
-  %w(connection core database dataset model schema sql).each do |src|
-    source[ src.to_sym ] = IO.readlines("source/#{ src }.js")
-  end
+  puts "Building dm.js..."
+  require 'sprockets'
   
-  license = {}
-  %w(dm).each do |src|
-    license[ src.to_sym ] = IO.readlines("licenses/#{ src }.txt")
-  end
-  
-  template =<<-EOS
-#{ license[:dm] }
-#{ source[:core] }
-#{ source[:connection] }
-#{ source[:database] }
-#{ source[:dataset] }
-#{ source[:schema] }
-#{ source[:sql] }
-#{ source[:model] }
-EOS
-  
-  File.open("dist/dm.js", 'w') do |f|
-    f.write template
-  end
+  secretary = Sprockets::Secretary.new(
+    :asset_root   => "assets",
+    :load_path    => ["source", "etc", "."],
+    :source_files => ["source/application.js"]
+  )
+
+  # Generate a Sprockets::Concatenation object from the source files
+  concatenation = secretary.concatenation
+  # Write the concatenation to disk
+  concatenation.save_to("dist/dm.js")
   
   puts "Piping dm.js through jsmin..."
   `cat dist/dm.js | jsmin > dist/dm.min.js`
@@ -37,5 +25,7 @@ EOS
   puts "Piping dm.js through yuicompressor..."
   `java -jar $HOME/Dev/bin/yuicompressor-2.3.5.jar -o dist/dm.ymin.js dist/dm.js`
   
-  puts "Done."
+  puts 'Done.'
 end
+
+task :default=>:build

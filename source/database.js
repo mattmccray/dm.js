@@ -1,7 +1,5 @@
 // database.js
-DM.Database = new Class({
-  
-  Implements: [Options, Events],
+DM.Database = Class.create(Options, { /// EVENTS???
   
   options: {
     name:         '',
@@ -19,17 +17,15 @@ DM.Database = new Class({
     DM.Model.DB = this;
   },
   
-  execute: function() {
-    var args = $A(arguments).link({sql: String.type, callback: Function.type, params: Array.type, options: Object.type});
-
-    if(!args.sql){ throw "You must provide SQL to execute"; }
+  execute: function(sql, params, callback, options) {
+    if(!sql){ throw "You must provide SQL to execute"; }
     
-    var sql      = args.sql,
-        callback = args.callback ? args.callback : function(){ /*console.log('No callback defined')*/ },
-        params   = args.params || [],
-        options  = args.options || {};
+    var callback = callback || function(){ /*console.log('No callback defined')*/ },
+        params   = params || [],
+        options  = options || {};
     
-//    console.log('execute( "'+ sql +'", ['+ params.join(', ') +'], '+ typeof callback +' )');
+    // console.log("Executing: "+ sql);
+    // console.log("With params: "+ Object.inspect(params))
     
     this.conn.execute(sql, params, function(results){
       // TODO: Should Database.execute do anything with the results before calling the callback?
@@ -39,8 +35,5 @@ DM.Database = new Class({
   
 });
 
-/* For testing: 
-
-(new DM.Database()).execute( "SELECT * FROM TEST WHERE id = ? and name = ?", 10, 'Matt' )
-
-*/
+// For testing: 
+// (new DM.Database()).execute( "SELECT * FROM TEST WHERE id = ? and name = ?", 10, 'Matt' )

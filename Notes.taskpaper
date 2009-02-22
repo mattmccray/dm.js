@@ -1,0 +1,11 @@
+Todo:
+- Add relationships:
+	- hasMany
+	- hasOne
+	- belongsTo
+	- hasAndBelongsToMany
+- WHERE clause builder
+
+
+Thoughts and/or Ideas:
+Perhaps ActiveRecord really isn't the model to pursue with this framework. The fact that the HTML5 data storage api is pervasively asynchronous makes some of AR's methods difficult at best. For example Model.count() really shouldn' require a callback, but it does. Maybe it'd be better to use a map/reduce pattern. You could chain calls to filter(), order(), sort() -- whatever. Then use an each() to run the SQL. @idea
