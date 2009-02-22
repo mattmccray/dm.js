@@ -11,7 +11,7 @@ This project is still in the early phases.
 * Simple models and schema generator
 * Base CRUD on models
 * Event callbacks for beforeCreate, afterCreate, beforeSave, and afterSave
-* Rudamentary Dataset class good for filtered reading of tables...
+* Rudimentary Dataset class good for filtered reading of tables...
 
 
 ## What Doesn't Work (Yet)
