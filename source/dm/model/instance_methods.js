@@ -1,12 +1,17 @@
 DM.ModelInstance = Class.create({
+  
   initialize: function(attributes, klass) {
     this.table_name = klass.table_name;
     this.fields = klass.fields; // Array
     this.columns = klass.columns; // Hash
+    this.relationships = klass.relationships; // Array
     this.klass = klass;
     this.isDirty = false;
     this.attributes = $H(attributes || {}); // Attributes from the SQLResultSet seem to be read-only
     this.id = this.attributes.get('id') || null;
+    this.relationships.each(function(rel){
+      rel.addMethodsToInstance(this);
+    }.bind(this));
   },
   
   get: function(attribute, raw) {
@@ -71,7 +76,7 @@ DM.ModelInstance = Class.create({
     if(typeof(self.id) == 'number') {
       self.klass._handleEvent('beforeSave', this);
       var cmds = DM.SQL.updateForModel(this)
-      DM.Model.DB.execute( cmds[0], cmds[1], function(res) {
+      DM.DB.execute( cmds[0], cmds[1], function(res) {
         self.klass._handleEvent('afterSave', self);
         callback(self);
       } );
@@ -83,7 +88,7 @@ DM.ModelInstance = Class.create({
       var cmds = DM.SQL.insertForModel(this),
           sql = cmds.first(),
           values = cmds.last();
-      DM.Model.DB.execute( sql, values, function(res) {
+      DM.DB.execute( sql, values, function(res) {
         // Need the last inserted ID
         self.id = res.insertId;
         self.attributes.set('id', self.id);
@@ -106,7 +111,7 @@ DM.ModelInstance = Class.create({
       var self = this,
           cmds = DM.SQL.deleteForModel(this),
           callback = callback || function(){};
-      DM.Model.DB.execute( cmds[0], cmds[1], function(res) {
+      DM.DB.execute( cmds[0], cmds[1], function(res) {
         self.id = null;
         self.set('id', null);
         callback(self);

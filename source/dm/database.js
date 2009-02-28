@@ -1,5 +1,23 @@
 // database.js
-DM.Database = Class.create(Options, { /// EVENTS???
+
+DM.DB = {
+  execute: function() {
+    throw "No DB connection has been made!!!";
+  }
+}
+
+// Mixin...
+DM.Options = {
+  
+  setOptions: function(opts) {
+    var defaultOpts = $H(this.options || {}),
+        overrideOpts = $H(opts || {});
+    this.options = defaultOpts.merge(overrideOpts).toObject();
+  }
+  
+}
+
+DM.Database = Class.create(DM.Options, { /// EVENTS???
   
   options: {
     name:         '',
@@ -13,8 +31,8 @@ DM.Database = Class.create(Options, { /// EVENTS???
   initialize: function(options) {
     this.setOptions(options);
     // This will be the appropriate DB Connection
-    this.conn = DM.ConnectionFactory.getConnection( this.options ); 
-    DM.Model.DB = this;
+    this.conn = DM.ConnectionFactory.getConnection( this.options );
+    DM.DB = this;
   },
   
   execute: function(sql, params, callback, options) {
@@ -37,3 +55,5 @@ DM.Database = Class.create(Options, { /// EVENTS???
 
 // For testing: 
 // (new DM.Database()).execute( "SELECT * FROM TEST WHERE id = ? and name = ?", 10, 'Matt' )
+
+//= require "connection"

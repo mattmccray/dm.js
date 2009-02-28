@@ -1,6 +1,6 @@
 <html>
   <script src="../etc/prototype.js"></script>
-  <script src="../dist/dm.js"></script>
+  <script src="../dist/dataset.js"></script>
   <script>
   
   
@@ -15,8 +15,8 @@
     "API": function() {
       assertDefined( typeof DM,           "DM is missing" );
       assertDefined( typeof DM.Database,  "DM.Database is missing" );
-      assertDefined( typeof DM.Schema,    "DM.Schema is missing" );
-      assertDefined( typeof DM.Model,     "DM.Model is missing" );
+      assertDefined( typeof DM.SQL,       "DM.SQL is missing" );
+//      assertDefined( typeof DM.Schema,    "DM.Schema is missing" );
     },
 
     note2: "Connection...",
@@ -81,10 +81,57 @@
       ds2.order('age');
       assertEqual("SELECT * FROM items WHERE (user_id = ?)  ORDER BY age ASC;", ds2.toSql() );
       
-      var scripts = new DM.Dataset('scripts');
+      var scripts = new DM.Dataset('comments');
       scripts.each(function(row){
-//        console.log(row.title)
+        console.log(row.id +":"+ row.post_id +": "+row.title)
+        // console.log(typeof row);
+        // console.log(row)
+      });
+      scripts.clone().filter( 'post_id'.eq('undefined') ).each(function(row){
+        console.log(row.id +":"+ row.post_id +": "+row.title)
+      });
+      
+      var comments = new DM.Dataset('comments');
+      comments.add({
+        title: "I'm added from DataSet code..",
+        source: "Isn't that nice?",
+        created_on: new Date()
+      }, function(){
+        console.log('Comments Add Callback!')
+        
+        
       })
+    },
+    
+    'DM.Schema.defineTable': function() {
+      
+      DM.Schema.defineTable('junk', function(t){
+        t.text('body');
+      });
+      
+      DM.Schema.createAllTables();
+    },
+    
+    'Add to new table...': function() {
+      var junk = new DM.Dataset('junk');
+      junk.add({
+          body: "Isn't that nice?"
+        }, function(){
+          console.log('Junk Add Callback!')
+      });
+    },
+
+    'Adding an array of values to new table...': function() {
+      var junk = new DM.Dataset('junk'),
+          newData = [
+            { body:"Item One" },
+            { body:"Item Two" },
+            { body:"Item Three" },
+          ];
+
+      junk.add(newData, function(){
+          console.log('>>> Junk[] Add Callback!')
+      });
     }
   };
   </script>

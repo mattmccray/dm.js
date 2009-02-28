@@ -1,10 +1,11 @@
 Todo:
 - Add relationships:
 	- hasMany
-	- hasOne
 	- belongsTo
+	- hasOne
 	- hasAndBelongsToMany
 - WHERE clause builder
+- t.serialize('column_name') -> Serializes to/from JSON???
 
 
 Thoughts and/or Ideas:

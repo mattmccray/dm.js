@@ -21,7 +21,7 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
-//  core.js
+
 var DM = {
   
   AUTHOR: "<%= AUTHOR %>",
@@ -29,22 +29,11 @@ var DM = {
   
 }
 
-// Mixin...
-var Options = {
-  
-  setOptions: function(opts) {
-    var defaultOpts = $H(this.options || {}),
-        overrideOpts = $H(opts || {});
-    this.options = defaultOpts.merge(overrideOpts).toObject();
-  }
-  
-}
-
-//= require "connection"
-//= require "database"
-//= require "dataset"
-//= require "model/instance_methods"
-//= require "model/class_methods"
-//= require "model/schema"
-//= require "model/schema_dsl"
-//= require "model/sql"
+//= require "dm/inflector"
+//= require "dm/database"
+//= require "dm/dataset"
+//= require "dm/sql"
+//= require "dm/model/instance_methods"
+//= require "dm/model/class_methods"
+//= require "dm/model/relationships"
+//= require "dm/schema"

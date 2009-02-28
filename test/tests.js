@@ -94,5 +94,46 @@ var Tests = {
       });
     })
     
+  },
+  
+  "Model Relationships": function() {
+    connectToDb()
+
+    window.Post = new DM.Model('posts', {
+       schema: function(t){ 
+         t.text('title');
+         t.text('source');
+         t.timestamps('on'); // Creates created_on && updated_on
+         t.hasMany(Comment, { cascadeDelete:true });
+       },
+     });
+     window.Comment = new DM.Model('comments', {
+        schema: function(t){ 
+          t.belongsTo(Post);
+          t.text('title');
+          t.text('source');
+          t.timestamps('on'); // Creates created_on && updated_on
+        },
+      });
+     
+     DM.Model.createModels(); // Need to ensure DB exists, eh?
+    
+    
+    var p = Post.create({
+      title:'A good title is priceless',
+      source: "Content here, really.",
+      html: "<p>Content here, really.</p>"
+    })
+    
+    p.save(function(model){
+      console.log(model)
+      assertNotNull(model.comments, "Model.comments is not null")
+
+      var c = p.comments.create({title:'I am a comment', source:'And I love it here!'});
+      assertNotNull(c, "New comment is not null");
+      c.save();
+    });
+    
   }
+  
 };

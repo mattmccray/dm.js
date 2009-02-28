@@ -67,3 +67,26 @@ DM.Schema.Timestamp = Class.create({
       this.allowNull = !opts.notNull;
   }
 });
+
+//= require "schema_dsl"
+DM.Schema._tables = $H({});
+
+DM.Schema.defineTable = function(tableName, configurator) {
+  var dsl = new DM.Schema.DSL(tableName).id();
+  configurator( dsl );
+  DM.Schema._tables.set(tableName, dsl); // Auto generate PK?
+  return dsl;
+}
+
+DM.Schema.createAllTables = function(){
+  if(DM.DB) {
+    DM.Schema._tables.keys().each(function(tableName){
+      console.log("Creating table: "+ tableName)
+      DM.DB.execute( DM.SQL.createForSchema( DM.Schema._tables.get(tableName), tableName), [], function() {
+        console.log("Table created:", tableName);
+      });      
+    });
+  } else {
+    console.log("DM.Schema.createAllTables: Error: No database is defined.");
+  }
+}

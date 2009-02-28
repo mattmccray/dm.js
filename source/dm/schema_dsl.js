@@ -5,6 +5,7 @@ DM.Schema.DSL = Class.create({
     this.fields = [];
     this.dateFields = [];
     this.columns = {}; // by column name...
+    this.relationships = [];
     this.eventHandlers = {
       'beforeSave': $A([]),
       'afterSave': $A([]),
@@ -64,25 +65,28 @@ DM.Schema.DSL = Class.create({
     return this;
   },
   
-  foreignKey: function(name, opts) {
-     ///??? REALLY?
-  },
+  // foreignKey: function(name, opts) {
+  //    ///??? REALLY?
+  // },
   
   hasMany: function(model, opts) {
     // Mode is string...
+    this.relationships.push( new DM.Relationships.HasMany(model, opts, this) );
   },
   
-  hasOne: function(model, opts) {
-    
-  },
   
   belongsTo: function(model, opts) {
-    
+    this.integer(model.table_name.singularize()+'_id', {allowNull:false});
+    this.relationships.push( new DM.Relationships.BelongsTo(model, opts, this) );
   },
   
-  hasAndBelongsToMany: function(model, opts) {
-    
-  },
+  // hasOne: function(model, opts) {
+  //   
+  // },
+  // 
+  // hasAndBelongsToMany: function(model, opts) {
+  //   
+  // },
   
   beforeSave: function(handler) {
     this.eventHandlers['beforeSave'].push(handler);

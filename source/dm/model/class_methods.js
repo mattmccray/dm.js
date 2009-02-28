@@ -7,31 +7,41 @@ DM.Model = (function(){ // Closure to allow truly private methods...
       if(!model_def){ throw "Model definitions missing!"; }
       
       this.table_name = table_name;
+      this.model_def = model_def;
       
-      if(model_def.schema) {
+      DM.Model.knownModels.set(table_name, this);
+    },
+    
+    initSchema: function() {
+      if(this.model_def.schema) {
         var dsl = new DM.Schema.DSL(this).id(); // Auto generate PK?
 
-        model_def.schema(dsl); // Exec Schema DSL
+        this.model_def.schema(dsl); // Exec Schema DSL
 
         this.fields = dsl.fields; // Array
         this.columns = dsl.columns; // Hash
         this.eventHandlers = dsl.eventHandlers;
+        this.relationships = dsl.relationships;
+
+        delete this.model_def['schema'];
         
-        delete model_def['schema'];
-        
+        // Need to create a custom 'instance' class with DM.ModelInstance as a parentClass.
+        // This class would have all the relationships defined already, so they dont' have
+        // to be rebound all the time.
+
       } else {
 //        console.log("No schema was provided for "+ table_name)
         this.fields = [];
         this.columns = [];
         this.eventHandlers = {};
+        this.relationships = [];
       }
 
-      DM.Model.knownModels.set(table_name, this);
     },
 
     find: function(idOrWhere, callback) {
       var self = this;
-      DM.Model.DB.execute("select * from "+ this.table_name +" where id = "+ idOrWhere +";", [], function(results){
+      DM.DB.execute("select * from "+ this.table_name +" where id = "+ idOrWhere +";", [], function(results){
         if(results.rows.length > 0) {
           var model = new DM.ModelInstance(results.rows.item(0), self);
           callback(model);
@@ -40,10 +50,29 @@ DM.Model = (function(){ // Closure to allow truly private methods...
         }
       });
     },
+    
+    findWhere: function(clause, callback) {
+      var ds = new DM.Dataset(this.table_name),
+          self = this;
+      ds.filter(clause);
+      DM.DB.execute(ds.toSql(), ds.values, function(results){
+        var models = [];
+        for (var i=0; i < results.rows.length; i++) {
+          var row = results.rows.item(i);
+          models.push( new DM.ModelInstance(row, self)  );
+        };
+        callback(models);
+      });
+    },
+    
+    filter: function(clause) {
+      var ds = new DM.Dataset(this.table_name, { asModel:true, modelKlass:this });
+      return ds.filter(clause);
+    },
 
     all: function(callback) { // where, 
       var self = this;
-      DM.Model.DB.execute("select * from "+ this.table_name +";", [], function(results){
+      DM.DB.execute("select * from "+ this.table_name +";", [], function(results){
 
         var models = [];
         for (var i=0; i < results.rows.length; i++) {
@@ -60,7 +89,7 @@ DM.Model = (function(){ // Closure to allow truly private methods...
       var self    = this,
           count   = 0;
       
-      DM.Model.DB.execute("select count(id) as cnt from "+ this.table_name +";", [], function(results){
+      DM.DB.execute("select count(id) as cnt from "+ this.table_name +";", [], function(results){
         count = results.rows.item(0)['cnt'];
         callback(count);
       });
@@ -102,11 +131,12 @@ DM.Model = (function(){ // Closure to allow truly private methods...
 DM.Model.knownModels = $H();
 
 DM.Model.createModels = function(){
-  if(DM.Model.DB) {
+  if(DM.DB) {
     DM.Model.knownModels.each(function(modelDef){ // klass, tableName
       var klass     = modelDef.value,
           tableName = modelDef.key;
-      DM.Model.DB.execute( DM.SQL.createForModel( klass ), [], function() {
+      klass.initSchema();
+      DM.DB.execute( DM.SQL.createForModel( klass ), [], function() {
 //        console.log("Table created:", tableName);
         klass.tableCreated = true;
       });
